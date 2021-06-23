@@ -1,0 +1,76 @@
+/backup_STM32F769I_DISCO.ioc
+
+[Bb]in/
+
+*.hex
+*.elf
+*.bin
+*.list
+*.su
+# *.launch
+*.d
+*.mxproject
+*.part
+
+*.tmp
+*.mk
+
+
+# Compiled Object files
+*.slo
+*.lo
+*.la
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Misc
+*.map
+*.m
+
+# Executables
+#*.exe
+#*.out
+*.app
+
+# application specific generated
+*.sdf
+*.suo
+*.user
+*.opensdf
+
+# STM32CubeIDE/Debug/makefile
+# STM32CubeIDE/.settings/language.settings.xml
+
+**/Debug/makefile
+**/Release/makefile
+**/.settings/language.settings.xml
+
+**/TouchGFX/build
+#**/TouchGFX/generated
+**/TouchGFX/simulator
+**/TouchGFX/config
+**/Middlewares/ST/touchgfx
+/TouchGFX/generated/simulator
+/TouchGFX/generated/texts
+/TouchGFX/generated/images
+/TouchGFX/generated/fonts
+
+#.cproject /!\ do not add this to gitignore
