@@ -71,6 +71,13 @@ const osThreadAttr_t taskUSB_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for SDMMCTask */
+osThreadId_t SDMMCTaskHandle;
+const osThreadAttr_t SDMMCTask_attributes = {
+  .name = "SDMMCTask",
+  .stack_size = 1024 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* Definitions for myBinarySemAnalog */
 osSemaphoreId_t myBinarySemAnalogHandle;
 const osSemaphoreAttr_t myBinarySemAnalog_attributes = {
@@ -92,6 +99,7 @@ static void MX_SDMMC2_SD_Init(void);
 void TouchGFX_Task(void *argument);
 void StartTaskAnalogInput(void *argument);
 void StartTaskUSB(void *argument);
+void StartTaskSDMMC(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -109,10 +117,7 @@ void StartTaskUSB(void *argument);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	FRESULT res; /* FatFs function common result code */
-	uint32_t byteswritten, bytesread; /* File write/read counts */
-	uint8_t wtext[] = "STM32 FATFS works great!"; /* File write buffer */
-	uint8_t rtext[_MAX_SS];/* File read buffer */
+
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
@@ -151,40 +156,7 @@ int main(void)
   MX_SDMMC2_SD_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
-  if(f_mount(&SDFatFS, (TCHAR const*)SDPath, 0) != FR_OK)
-      {
-          Error_Handler();
-      }
-      else
-      {
-    	  int ret = f_mkfs((TCHAR const*)SDPath, FM_ANY, 0, rtext, sizeof(rtext));
-          if(ret != FR_OK)
-          {
-              Error_Handler();
-          }
-          else
-          {
-              //Open file for writing (Create)
-              if(f_open(&SDFile, "STM32.TXT", FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
-              {
-                  Error_Handler();
-              }
-              else
-              {
-                  //Write to the text file
-                  res = f_write(&SDFile, wtext, strlen((char *)wtext), (void *)&byteswritten);
-                  if((byteswritten == 0) || (res != FR_OK))
-                  {
-                      Error_Handler();
-                  }
-                  else
-                  {
-                      f_close(&SDFile);
-                  }
-              }
-          }
-      }
-      f_mount(&SDFatFS, (TCHAR const*)NULL, 0);
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -219,6 +191,9 @@ int main(void)
 
   /* creation of taskUSB */
   taskUSBHandle = osThreadNew(StartTaskUSB, NULL, &taskUSB_attributes);
+
+  /* creation of SDMMCTask */
+  SDMMCTaskHandle = osThreadNew(StartTaskSDMMC, NULL, &SDMMCTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -610,6 +585,63 @@ void StartTaskUSB(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartTaskUSB */
+}
+
+/* USER CODE BEGIN Header_StartTaskSDMMC */
+/**
+* @brief Function implementing the SDMMCTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTaskSDMMC */
+void StartTaskSDMMC(void *argument)
+{
+  /* USER CODE BEGIN StartTaskSDMMC */
+	FRESULT res; /* FatFs function common result code */
+	uint32_t byteswritten, bytesread; /* File write/read counts */
+	uint8_t wtext[] = "STM32 FATFS works great!"; /* File write buffer */
+	uint8_t rtext[_MAX_SS];/* File read buffer */
+  /* Infinite loop */
+  for(;;)
+  {
+	  if(f_mount(&SDFatFS, (TCHAR const*)SDPath, 0) != FR_OK)
+	        {
+	            Error_Handler();
+	        }
+	        else
+	        {
+	      	  int ret = f_mkfs((TCHAR const*)SDPath, FM_ANY, 0, rtext, sizeof(rtext));
+	            if(ret != FR_OK)
+	            {
+	                Error_Handler();
+	            }
+	            else
+	            {
+	                //Open file for writing (Create)
+	                if(f_open(&SDFile, "STM32.TXT", FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
+	                {
+	                    Error_Handler();
+	                }
+	                else
+	                {
+	                    //Write to the text file
+	                    res = f_write(&SDFile, wtext, strlen((char *)wtext), (void *)&byteswritten);
+	                    if((byteswritten == 0) || (res != FR_OK))
+	                    {
+	                        Error_Handler();
+	                    }
+	                    else
+	                    {
+	                        f_close(&SDFile);
+	                    }
+	                }
+	            }
+	        }
+	        f_mount(&SDFatFS, (TCHAR const*)NULL, 0);
+
+    osDelay(1000);
+  }
+  /* USER CODE END StartTaskSDMMC */
 }
 
 /* MPU Configuration */

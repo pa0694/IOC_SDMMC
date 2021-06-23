@@ -24,7 +24,7 @@ FATFS SDFatFS;    /* File system object for SD logical drive */
 FIL SDFile;       /* File object for SD */
 
 /* USER CODE BEGIN Variables */
-//SD_HandleTypeDef hsd2;
+
 /* USER CODE END Variables */
 
 void MX_FATFS_Init(void)
@@ -34,7 +34,7 @@ void MX_FATFS_Init(void)
 
   /* USER CODE BEGIN Init */
   /* additional user code for init */
-  //HAL_SD_Init(&hsd2);// HAL_SD_Init not added by CubeMX
+
   /* USER CODE END Init */
 }
 
